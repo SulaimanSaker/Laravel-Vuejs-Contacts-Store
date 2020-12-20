@@ -1,13 +1,12 @@
 <template>
   <div>
     <h1>Contacts</h1>
-
     <form
       action="#"
       @submit.prevent="edit ? updateContact(contact.id) : createContact()"
     >
       <div class="form-group">
-        <label for="">Name</label>
+        <label>Name</label>
         <input
           v-model="contact.name"
           type="text"
@@ -15,9 +14,8 @@
           class="form-control"
         />
       </div>
-
       <div class="form-group">
-        <label for="">Email</label>
+        <label>Email</label>
         <input
           v-model="contact.email"
           type="text"
@@ -25,9 +23,8 @@
           class="form-control"
         />
       </div>
-
       <div class="form-group">
-        <label for="">Phone</label>
+        <label>Phone</label>
         <input
           v-model="contact.phone"
           type="text"
@@ -35,7 +32,6 @@
           class="form-control"
         />
       </div>
-
       <div class="form-group">
         <button v-show="!edit" type="submit" class="btn btn-primary">
           New Contact
@@ -64,14 +60,40 @@ export default {
   },
   mounted: function() {
     console.log("Contacts Component Loaded...");
+    this.fetchContactList();
   },
   methods: {
-    createContact: function() {
-      console.log("creating contact..");
-      return;
+    fetchContactList: function() {
+      console.log("Fetching contacts...");
+      axios
+        .get("api/contacts")
+        .then((response) => {
+          console.log(response.data);
+          this.list = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
-    updateContact: function() {
-      console.log("updating contact..");
+    createContact: function() {
+      console.log("Creating contact...");
+      let self = this;
+      let params = Object.assign({}, self.contact);
+      axios
+        .post("api/contact/store", params)
+        .then(function() {
+          self.contact.name = "";
+          self.contact.email = "";
+          self.contact.phone = "";
+          self.edit = false;
+          self.fetchContactList();
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    updateContact: function(id) {
+      console.log("Updating contact " + id + "...");
       return;
     },
   },

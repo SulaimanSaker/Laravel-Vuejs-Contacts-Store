@@ -970,15 +970,11 @@ module.exports = __webpack_require__(43);
 /* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
-
 __webpack_require__(11);
 
 window.Vue = __webpack_require__(35);
+
+var axios = __webpack_require__(16);
 
 Vue.component("contacts", __webpack_require__(54));
 
@@ -45048,10 +45044,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
@@ -45068,14 +45060,36 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   },
   mounted: function mounted() {
     console.log("Contacts Component Loaded...");
+    this.fetchContactList();
   },
   methods: {
-    createContact: function createContact() {
-      console.log("creating contact..");
-      return;
+    fetchContactList: function fetchContactList() {
+      var _this = this;
+
+      console.log("Fetching contacts...");
+      axios.get("api/contacts").then(function (response) {
+        console.log(response.data);
+        _this.list = response.data;
+      }).catch(function (error) {
+        console.log(error);
+      });
     },
-    updateContact: function updateContact() {
-      console.log("updating contact..");
+    createContact: function createContact() {
+      console.log("Creating contact...");
+      var self = this;
+      var params = Object.assign({}, self.contact);
+      axios.post("api/contact/store", params).then(function () {
+        self.contact.name = "";
+        self.contact.email = "";
+        self.contact.phone = "";
+        self.edit = false;
+        self.fetchContactList();
+      }).catch(function (error) {
+        console.log(error);
+      });
+    },
+    updateContact: function updateContact(id) {
+      console.log("Updating contact " + id + "...");
       return;
     }
   }
@@ -45105,7 +45119,7 @@ var render = function() {
       },
       [
         _c("div", { staticClass: "form-group" }, [
-          _c("label", { attrs: { for: "" } }, [_vm._v("Name")]),
+          _c("label", [_vm._v("Name")]),
           _vm._v(" "),
           _c("input", {
             directives: [
@@ -45131,7 +45145,7 @@ var render = function() {
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "form-group" }, [
-          _c("label", { attrs: { for: "" } }, [_vm._v("Email")]),
+          _c("label", [_vm._v("Email")]),
           _vm._v(" "),
           _c("input", {
             directives: [
@@ -45157,7 +45171,7 @@ var render = function() {
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "form-group" }, [
-          _c("label", { attrs: { for: "" } }, [_vm._v("Phone")]),
+          _c("label", [_vm._v("Phone")]),
           _vm._v(" "),
           _c("input", {
             directives: [
